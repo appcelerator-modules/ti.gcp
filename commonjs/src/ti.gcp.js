@@ -134,7 +134,14 @@ function onLoad(e) {
         if (printOptions.encoding) {
             encoding = '"' + printOptions.encoding + '"';
         }
-        e.source.evalJS('window.addEventListener("message", function(evt){ alert(evt); }, false)');
+        var testCloseInterval = setInterval(function () {
+        	if ( e.source.evalJS('wasPrinted') ) {
+        		clearInterval(testCloseInterval);
+        		close();
+        	}
+        }, 1000);
+        e.source.evalJS('var wasPrinted = false;');
+        e.source.evalJS('window.addEventListener("message", function(evt){ wasPrinted = true; }, false)');
         e.source.evalJS('printDialog.setPrintDocument(printDialog.createPrintDocument(\
             "' + type + '",\
             "' + title + '",\
